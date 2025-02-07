@@ -54,6 +54,47 @@
             }
         </script>
     </div>
+
+    <!-- web socket -->
+    <div>
+        <canvas id="ping-ping" width="600" height="400"></canvas>
+
+        <script>
+            const canvas = document.getElementById('ping-ping');
+            const ctx = canvas.getContext('2d');
+
+            function setCanvasMessage(message) {
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.font = "bold 60px Arial";
+                ctx.fillStyle = "white";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+
+                ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+            }
+        </script>
+
+        <script>
+            const chatSocket = new WebSocket(
+                'ws://'
+                + window.location.host
+                + '/api/ping-pong/duel/ws/'
+            );
+
+            chatSocket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+                console.log(data.message);
+
+                setCanvasMessage(data.message);
+            };
+
+            chatSocket.onclose = function (e) {
+                console.error('Chat socket closed unexpectedly');
+            };
+        </script>
+    </div>
 </body>
 
 </html>
