@@ -63,8 +63,8 @@
             const canvas = document.getElementById('ping-ping');
             const ctx = canvas.getContext('2d');
 
-            function setCanvasMessage(message) {
-                ctx.fillStyle = "black";
+            function setCanvasMessage(message, background) {
+                ctx.fillStyle = background;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 ctx.font = "bold 60px Arial";
@@ -87,7 +87,7 @@
                 const data = JSON.parse(e.data);
                 console.log(data.message);
 
-                setCanvasMessage(data.message);
+                setCanvasMessage(data.message, data.background);
             };
 
             chatSocket.onclose = function (e) {
