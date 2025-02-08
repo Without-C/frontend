@@ -55,10 +55,11 @@
         </script>
     </div>
 
-    <!-- web socket -->
+    <!-- ping pong -->
     <div>
         <canvas id="ping-ping" width="600" height="400"></canvas>
 
+        <!-- managing canvas -->
         <script>
             const canvas = document.getElementById('ping-ping');
             const ctx = canvas.getContext('2d');
@@ -88,6 +89,7 @@
             }
         </script>
 
+        <!-- managing websocket -->
         <script>
             const chatSocket = new WebSocket(
                 'ws://'
