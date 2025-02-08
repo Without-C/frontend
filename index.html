@@ -88,10 +88,7 @@
                 ctx.closePath();
             }
 
-            function draw_paddle(x, y) {
-                paddle_width = 10
-                paddle_height = 100
-
+            function draw_paddle(x, y, paddle_width, paddle_height) {
                 ctx.fillStyle = "white";
                 ctx.fillRect(x - paddle_width / 2, y - paddle_height / 2, paddle_width, paddle_height);
             }
@@ -120,8 +117,8 @@
                         break;
                     case "game_state":
                         draw_ball(data.game_state.ball_x, data.game_state.ball_y);
-                        draw_paddle(30, data.game_state.player1_paddle_y);
-                        draw_paddle(570, data.game_state.player2_paddle_y);
+                        draw_paddle(30, data.game_state.player1_paddle_y, data.game_state.paddle_width, data.game_state.paddle_height);
+                        draw_paddle(570, data.game_state.player2_paddle_y, data.game_state.paddle_width, data.game_state.paddle_height);
                         break;
                 }
             };
