@@ -76,7 +76,7 @@
             }
 
             function draw_ball(ball_x, ball_y, background) {
-                ctx.fillStyle = background;
+                ctx.fillStyle = "green";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 const ballRadius = 10;
@@ -97,12 +97,20 @@
 
             chatSocket.onmessage = function (e) {
                 const data = JSON.parse(e.data);
-                console.log(data.message);
 
-                if (data.message == "game_state") {
-                    draw_ball(data.game_state.ball_x, data.game_state.ball_y, data.background);
-                } else {
-                    setCanvasMessage(data.message, data.background);
+                switch (data.type) {
+                    case "wait":
+                        setCanvasMessage("Waiting...", "black");
+                        break;
+                    case "start":
+                        setCanvasMessage("Game will be started!", "red");
+                        break;
+                    case "opponent_exit":
+                        setCanvasMessage("Opponent exited", "gray");
+                        break;
+                    case "game_state":
+                        draw_ball(data.game_state.ball_x, data.game_state.ball_y);
+                        break;
                 }
             };
 
