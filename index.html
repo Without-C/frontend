@@ -74,6 +74,18 @@
 
                 ctx.fillText(message, canvas.width / 2, canvas.height / 2);
             }
+
+            function draw_ball(ball_x, ball_y, background) {
+                ctx.fillStyle = background;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const ballRadius = 10;
+                ctx.beginPath();
+                ctx.arc(ball_x, ball_y, ballRadius, 0, Math.PI * 2, false);
+                ctx.fillStyle = "white";
+                ctx.fill();
+                ctx.closePath();
+            }
         </script>
 
         <script>
@@ -87,7 +99,11 @@
                 const data = JSON.parse(e.data);
                 console.log(data.message);
 
-                setCanvasMessage(data.message, data.background);
+                if (data.message == "game_state") {
+                    draw_ball(data.game_state.ball_x, data.game_state.ball_y, data.background);
+                } else {
+                    setCanvasMessage(data.message, data.background);
+                }
             };
 
             chatSocket.onclose = function (e) {
