@@ -119,6 +119,29 @@
             chatSocket.onclose = function (e) {
                 console.error('Chat socket closed unexpectedly');
             };
+
+            function sendKeyState(key, state) {
+                chatSocket.send(JSON.stringify({ action: "key", key: key, state: state }));
+            }
+        </script>
+
+        <!-- managing key state -->
+        <script>
+            const keyState = {};
+
+            document.addEventListener('keydown', function (event) {
+                if (!keyState[event.key]) {
+                    keyState[event.key] = true;
+                    // console.log(event.key, "pressed");
+                    sendKeyState(event.key, "press");
+                }
+            });
+
+            document.addEventListener('keyup', function (event) {
+                keyState[event.key] = false;
+                // console.log(event.key, "released");
+                sendKeyState(event.key, "release");
+            });     
         </script>
     </div>
 </body>
