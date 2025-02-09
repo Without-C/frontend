@@ -59,10 +59,11 @@
         </script>
     </div>
 
-    <!-- web socket -->
+    <!-- ping pong -->
     <div>
         <canvas id="ping-ping" width="600" height="400"></canvas>
 
+        <!-- managing canvas -->
         <script>
             const canvas = document.getElementById('ping-ping');
             const ctx = canvas.getContext('2d');
@@ -78,8 +79,26 @@
 
                 ctx.fillText(message, canvas.width / 2, canvas.height / 2);
             }
+
+            function draw_ball(ball_x, ball_y, background) {
+                ctx.fillStyle = "green";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const ballRadius = 10;
+                ctx.beginPath();
+                ctx.arc(ball_x, ball_y, ballRadius, 0, Math.PI * 2, false);
+                ctx.fillStyle = "white";
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            function draw_paddle(width, height, x, y) {
+                ctx.fillStyle = "white";
+                ctx.fillRect(x - width / 2, y - height / 2, width, height);
+            }
         </script>
 
+        <!-- managing websocket -->
         <script>
             const chatSocket = new WebSocket(
                 'ws://'
@@ -89,14 +108,64 @@
 
             chatSocket.onmessage = function (e) {
                 const data = JSON.parse(e.data);
-                console.log(data.message);
 
-                setCanvasMessage(data.message, data.background);
+                switch (data.type) {
+                    case "wait":
+                        setCanvasMessage("Waiting...", "black");
+                        break;
+                    case "start":
+                        setCanvasMessage("Game will be started!", "red");
+                        break;
+                    case "opponent_exit":
+                        setCanvasMessage("Opponent exited", "gray");
+                        break;
+                    case "game_state":
+                        let ball = data.game_state.ball;
+                        let paddle1 = data.game_state.paddle1;
+                        let paddle2 = data.game_state.paddle2;
+                        draw_ball(ball.x, ball.y);
+                        draw_paddle(paddle1.width, paddle1.height, paddle1.x, paddle1.y);
+                        draw_paddle(paddle2.width, paddle2.height, paddle2.x, paddle2.y);
+                        break;
+                }
             };
 
             chatSocket.onclose = function (e) {
                 console.error('Chat socket closed unexpectedly');
             };
+
+            function sendKeyState(key, state) {
+                chatSocket.send(JSON.stringify({ action: "key", key: key, state: state }));
+            }
+        </script>
+
+        <!-- managing key state -->
+        <script>
+            const keyState = {};
+
+            document.addEventListener('keydown', function (event) {
+                if (!keyState[event.key]) {
+                    keyState[event.key] = true;
+                    // console.log(event.key, "pressed");
+                    sendKeyState(event.key, "press");
+                }
+            });
+
+            document.addEventListener('keyup', function (event) {
+                keyState[event.key] = false;
+                // console.log(event.key, "released");
+                sendKeyState(event.key, "release");
+            });
+
+            // 플레이어가 키를 누르고 있는 상태에서 다른 창으로 포커스를 옮겼을 때 모든 키 release
+            window.addEventListener('blur', function () {
+                for (const key in keyState) {
+                    if (keyState[key]) {
+                        keyState[key] = false;
+                        sendKeyState(key, "release");
+                    }
+                }
+            });
         </script>
     </div>
 </body>
